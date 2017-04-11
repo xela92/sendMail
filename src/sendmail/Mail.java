@@ -80,19 +80,20 @@ public class Mail {
                 File etcConf = new File("/etc/mail.conf");
                 if (etcConf.exists()) {
                     config_file = etcConf;
+                    return config_file;
                 }
-            } else {
-                config_file = new File(Utils.getConfigurationDir() + File.separator + ".mail.conf");
-                System.out.println(MessageFormat.format(R.string("using_conf"), config_file.getAbsolutePath()));
-                if (!config_file.exists()) {
-                    try {
-                        config_file.createNewFile();
-                    } catch (IOException ex) {
-                        Utils.sendError(MessageFormat.format(R.string("error_creating_conf"), Utils.getConfigurationDir(), ex.getLocalizedMessage()));
-                    }
+            }
+            config_file = new File(Utils.getConfigurationDir() + File.separator + ".mail.conf");
+            System.out.println(MessageFormat.format(R.string("using_conf"), config_file.getAbsolutePath()));
+            if (!config_file.exists()) {
+                try {
+                    config_file.createNewFile();
+                } catch (IOException ex) {
+                    Utils.sendError(MessageFormat.format(R.string("error_creating_conf"), Utils.getConfigurationDir(), ex.getLocalizedMessage()));
                 }
             }
         }
+
         return config_file;
 
     }
