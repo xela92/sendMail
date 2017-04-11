@@ -23,3 +23,15 @@ needs_SSL=false
 
 
 I think it's easy enough to understand. ;-)
+
+You can directly use the JAR binary file in exe folder of this project, 
+it includes the lib folder.
+
+I suggest you to move the jar in a folder you want (I made a jbin folder
+in /usr/local) and create a script like this in $PATH
+
+#!/bin/bash
+java -jar /usr/local/jbin/sendMail.jar "$@"
+
+
+
