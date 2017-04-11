@@ -29,13 +29,13 @@ public class Localization {
         Locale.setDefault(currentLocale);
 
         try {
-            lang = ResourceBundle.getBundle("sendMail.lang.LangBundle", Locale.getDefault());
+            lang = ResourceBundle.getBundle("sendmail.lang.LangBundle", Locale.getDefault());
             lang.getString("sender_info");
         } catch (MissingResourceException mre) {
             Utils.sendError("Missing resource, falling back...");
             Locale.setDefault(getDefaultLocale());
         }
-        lang = ResourceBundle.getBundle("sendMail.lang.LangBundle", Locale.getDefault());
+        lang = ResourceBundle.getBundle("sendmail.lang.LangBundle", Locale.getDefault());
 
         //String welcome = lang.getString("firstui_first_title");
         //System.out.println(welcome);
