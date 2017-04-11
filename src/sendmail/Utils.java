@@ -53,4 +53,16 @@ public class Utils {
     static String getConfigurationDir() {
         return System.getProperty("user.home");
     }
+
+    public static String getOs() {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            return "win";
+        } else if (os.contains("mac")) {
+            return "mac";
+        } else {
+
+            return "lin";
+        }
+    }
 }

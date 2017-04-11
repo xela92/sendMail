@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -75,13 +76,20 @@ public class Mail {
 
     public File getConf() {
         if (config_file == null) {
-            config_file = new File(Utils.getConfigurationDir() + File.separator + ".mail.conf");
-            System.out.println(config_file.getAbsolutePath());
-            if (!config_file.exists()) {
-                try {
-                    config_file.createNewFile();
-                } catch (IOException ex) {
-                    Utils.sendError( MessageFormat.format(R.string("error_creating_conf"), Utils.getConfigurationDir(), ex.getLocalizedMessage()));
+            if (Utils.getOs().equalsIgnoreCase("lin")) {
+                File etcConf = new File("/etc/mail.conf");
+                if (etcConf.exists()) {
+                    config_file = etcConf;
+                }
+            } else {
+                config_file = new File(Utils.getConfigurationDir() + File.separator + ".mail.conf");
+                System.out.println(MessageFormat.format(R.string("using_conf"), config_file.getAbsolutePath()));
+                if (!config_file.exists()) {
+                    try {
+                        config_file.createNewFile();
+                    } catch (IOException ex) {
+                        Utils.sendError(MessageFormat.format(R.string("error_creating_conf"), Utils.getConfigurationDir(), ex.getLocalizedMessage()));
+                    }
                 }
             }
         }
