@@ -14,7 +14,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -37,8 +40,9 @@ import javax.mail.internet.MimeMultipart;
  */
 public class Mail {
 
+    private File config_file;
     private Properties conf = new Properties();
-    private Properties props;
+    private Properties mailProps;
     private Session session;
     private String to, subject, message;
     private File attachment;
@@ -69,24 +73,35 @@ public class Mail {
         loadMailServerData();
     }
 
-    public static File getConf() {
-        return new File(Utils.getConfigurationDir() + File.separator + ".mail.conf");
+    public File getConf() {
+        if (config_file == null) {
+            config_file = new File(Utils.getConfigurationDir() + File.separator + ".mail.conf");
+            System.out.println(config_file.getAbsolutePath());
+            if (!config_file.exists()) {
+                try {
+                    config_file.createNewFile();
+                } catch (IOException ex) {
+                    Utils.sendError( MessageFormat.format(R.string("error_creating_conf"), Utils.getConfigurationDir(), ex.getLocalizedMessage()));
+                }
+            }
+        }
+        return config_file;
 
     }
 
     private void loadMailServerData() {
         loadConf();
-        props = new Properties();
-        props.put("mail.transport.protocol", "smtp");
+        mailProps = new Properties();
+        mailProps.put("mail.transport.protocol", "smtp");
         if (smtp != null && port != null) {
-            props.put("mail.smtp.host", smtp);
-            props.put("mail.smtp.port", port);
+            mailProps.put("mail.smtp.host", smtp);
+            mailProps.put("mail.smtp.port", port);
         } else {
-            Utils.sendError("Error - please set at least SMTP server and port in " + Utils.getConfigurationDir() + File.separator + ".mail.conf");
+            Utils.sendError(MessageFormat.format(R.string("error_smtp_not_set"), getConf().getAbsolutePath()));
             System.exit(0);
         }
         if (needsAuth) {
-            props.put("mail.smtp.auth", "true");
+            mailProps.put("mail.smtp.auth", "true");
             if (user != null && pass != null) {
                 Authenticator authenticator = new Authenticator() {
                     @Override
@@ -94,11 +109,13 @@ public class Mail {
                         return new PasswordAuthentication(user, pass);
                     }
                 };
-                session = Session.getDefaultInstance(props, authenticator);
+                session = Session.getDefaultInstance(mailProps, authenticator);
             } else {
-                Utils.sendError("Error - please set username and password in " + Utils.getConfigurationDir() + File.separator + ".mail.conf, or set needs_authentication = false");
+                Utils.sendError(MessageFormat.format(R.string("error_auth_failed"), getConf().getAbsolutePath()));
                 System.exit(0);
             }
+        } else {
+            System.out.println(MessageFormat.format(R.string("info_auth_not_set"), getConf().getAbsolutePath()));
         }
     }
 
@@ -112,24 +129,28 @@ public class Mail {
                 is = new FileInputStream(getConf());
             } catch (Exception e) {
                 is = null;
-                Utils.sendError("Errore apertura inputstream: " + e.getLocalizedMessage());
+                Utils.sendError(MessageFormat.format(R.string("error_opening_inputstream"), e.getLocalizedMessage()));
             }
             try {
                 conf.load(is);
-                smtp = conf.getProperty("smtp") != null ? props.getProperty("smtp") : null;
-                port = conf.getProperty("port") != null ? props.getProperty("port") : null;
-                needsAuth = props.getProperty("needs_authentication") != null ? props.getProperty("needs_authentication").equalsIgnoreCase("true") : false;
+                smtp = conf.getProperty("smtp") != null ? conf.getProperty("smtp") : null;
+                port = conf.getProperty("port") != null ? conf.getProperty("port") : null;
+                System.out.println(MessageFormat.format(R.string("smtp_info"), smtp, port));
+                needsAuth = conf.getProperty("needs_auth") != null ? conf.getProperty("needs_auth").equalsIgnoreCase("true") : false;
                 if (needsAuth) {
-                    user = conf.getProperty("user") != null ? props.getProperty("user") : null;
-                    pass = conf.getProperty("password") != null ? props.getProperty("password") : null;
+                    user = conf.getProperty("user") != null ? conf.getProperty("user") : null;
+                    pass = conf.getProperty("password") != null ? conf.getProperty("password") : null;
+                    System.out.println(MessageFormat.format(R.string("auth_needed"), user));
                 }
-                sender_mail = conf.getProperty("sender_mail") != null ? props.getProperty("sender_mail") : null;
+                sender_mail = conf.getProperty("sender_mail") != null ? conf.getProperty("sender_mail") : null;
+                sender_name = conf.getProperty("sender_name") != null ? conf.getProperty("sender_name") : null;
+                System.out.println(MessageFormat.format(R.string("sender_info"), sender_name, sender_mail));
             } catch (IOException e) {
-                Utils.sendError("Errore di I/O nel caricamento delle opzioni: " + e.getLocalizedMessage());
+                Utils.sendError(MessageFormat.format(R.string("io_error_loading_conf"), e.getLocalizedMessage()));
                 //Utils.showErrorMessage("Errore nel caricamento della configurazione: " + e.getLocalizedMessage());
-            } catch (NullPointerException npe) {
-
             }
+        } else {
+            Utils.sendError(MessageFormat.format(R.string("file_not_found"), getConf().getAbsolutePath()));
         }
 
     }
@@ -148,7 +169,7 @@ public class Mail {
         try {
             Message msg = new MimeMessage(session);
             if (sender_mail == null) {
-                Utils.sendError("Error - please set a sender_mail in " + Utils.getConfigurationDir() + File.separator + ".mail.conf");
+                Utils.sendError(MessageFormat.format(R.string("sender_mail_error"), getConf().getAbsolutePath()));
                 System.exit(0);
             }
             msg.setFrom(new InternetAddress(sender_mail, sender_name != null ? sender_name : sender_mail));
@@ -166,7 +187,7 @@ public class Mail {
                 multipart.addBodyPart(messageBodyPart);
                 msg.setContent(multipart);
             }
-            l.setToBeLogged("inviata mail a " + to + " con contenuto: " + subject + " - " + message);
+            l.setToBeLogged(MessageFormat.format(R.string("log_mail_sent"), to, subject, message));
             l.writeLog();
             if (!to.equals("")) {
                 Transport.send(msg);
@@ -174,12 +195,12 @@ public class Mail {
             }
 
         } catch (AddressException e) {
-            Utils.sendError("Indirizzo inesistente! " + e.getLocalizedMessage());
+            Utils.sendError(MessageFormat.format(R.string("address_invalid"), e.getLocalizedMessage()));
 
         } catch (MessagingException e) {
-            Utils.sendError("Errore nell'invio. L'indirizzo " + to + " potrebbe non esistere o e' temporaneamente impossibile collegarsi all'SMTP. Riprova piu' tardi. " + e.getLocalizedMessage());
+            Utils.sendError(MessageFormat.format(R.string("error_sending"), to, e.getLocalizedMessage()));
         } catch (UnsupportedEncodingException e) {
-            Utils.sendError("Encoding non supportato: " + e.getLocalizedMessage());
+            Utils.sendError(MessageFormat.format(R.string("encoding_not_supported"), e.getLocalizedMessage()));
 
         }
     }

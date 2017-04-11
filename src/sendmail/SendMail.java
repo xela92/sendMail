@@ -6,6 +6,7 @@
 package sendmail;
 
 import java.io.File;
+import java.util.Locale;
 
 /**
  *
@@ -17,7 +18,8 @@ public class SendMail {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String usage = "Utilizzo: sendMail.jar mail@destinatario.it \"oggetto\" \"messaggio\" \"percorso/al/file da allegare.ext\"";
+        Localization.setLocale(Locale.getDefault());
+        String usage = R.string("usage");
         Utils.logErrorsToFile();
         if (args.length > 2 && args.length < 5) {
             String to = args[0];
@@ -29,7 +31,7 @@ public class SendMail {
             }
 
             if (to == null) {
-                System.err.println("impostare un destinatario!\n" + usage);
+                System.err.println(R.string("recipient_needed") + "\n" + usage);
                 System.exit(0);
             }
             Mail m = new Mail(to, subject, message, attach);
