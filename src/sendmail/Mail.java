@@ -114,9 +114,10 @@ public class Mail {
             mailProps.put("mail.smtp.auth", "true");
             if (user != null && pass != null) {
                 if (needsSSL) {
-                    mailProps.put("mail.smtp.socketFactory.port", port);
-                    mailProps.put("mail.smtp.socketFactory.class",
-                            "javax.net.ssl.SSLSocketFactory");
+                    mailProps.put("mail.smtp.ssl.enable", "true");
+//                    mailProps.put("mail.smtp.socketFactory.port", port);
+//                    mailProps.put("mail.smtp.socketFactory.class",
+//                            "javax.net.ssl.SSLSocketFactory");
                 }
                 Authenticator authenticator = new Authenticator() {
                     @Override
@@ -163,7 +164,6 @@ public class Mail {
                 System.out.println(MessageFormat.format(R.string("sender_info"), sender_name, sender_mail));
             } catch (IOException e) {
                 Utils.sendError(MessageFormat.format(R.string("io_error_loading_conf"), e.getLocalizedMessage()));
-                //Utils.showErrorMessage("Errore nel caricamento della configurazione: " + e.getLocalizedMessage());
             }
         } else {
             Utils.sendError(MessageFormat.format(R.string("file_not_found"), getConf().getAbsolutePath()));
@@ -172,8 +172,8 @@ public class Mail {
     }
 
     /*public boolean hasSentMailToday() {
-        if (OptionsController.getLastSentMailDay() != 0) {
-            return Long.parseLong(OptionsController.getOptions().get("last_sent_mail_day").toString()) >= System.currentTimeMillis();
+        if (getLastSentMailDay() != 0) {
+            return Long.parseLong(conf.get("last_sent_mail_day").toString()) >= System.currentTimeMillis();
         } else {
             return false;
         }
