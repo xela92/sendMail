@@ -49,4 +49,8 @@ public class Utils {
             fileLogWriter.println(message);
         }
     }
+
+    static String getConfigurationDir() {
+        return System.getProperty("user.home");
+    }
 }
