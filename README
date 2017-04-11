@@ -1,6 +1,8 @@
 This program aims to help having an easy-to-use tool to send mails with a simple
 syntax, and very little configuration to do.
 
+The only requirement is Java (I'm using version 8).
+
 To start with sendMail, just create a file in your home directory called
 
 ".mail.conf"
