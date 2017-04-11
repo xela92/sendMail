@@ -11,7 +11,7 @@ you can also use /etc/mail.conf on a Linux system.
 
 The file should be like this:
 
-<code>
+
 smtp=smtp.myserver.com
 port=25
 sender_mail=mail@myserver.com
@@ -20,6 +20,6 @@ needs_auth=true
 user=mail@myserver.com
 password=mypassword
 needs_SSL=false
-</code>
+
 
 I think it's easy enough to understand. ;-)
