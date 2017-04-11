@@ -6,7 +6,6 @@
 package sendmail;
 
 import java.io.File;
-import java.util.Locale;
 
 /**
  *
@@ -18,7 +17,8 @@ public class SendMail {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Localization.setLocale(Locale.getDefault());
+        //Localization.setLocale(Locale.getDefault());
+        Localization.setLocale(Localization.getDefaultLocale());
         String usage = R.string("usage");
         Utils.logErrorsToFile();
         if (args.length > 2 && args.length < 5) {
