@@ -55,6 +55,7 @@ public class Mail {
     private String pass;
     private String sender_mail;
     private String sender_name;
+    private boolean needsSSL;
 
     public Mail(String to, String subject, String message, File attach) {
         this.to = to;
@@ -112,6 +113,11 @@ public class Mail {
         if (needsAuth) {
             mailProps.put("mail.smtp.auth", "true");
             if (user != null && pass != null) {
+                if (needsSSL) {
+                    mailProps.put("mail.smtp.socketFactory.port", port);
+                    mailProps.put("mail.smtp.socketFactory.class",
+                            "javax.net.ssl.SSLSocketFactory");
+                }
                 Authenticator authenticator = new Authenticator() {
                     @Override
                     protected PasswordAuthentication getPasswordAuthentication() {
@@ -150,6 +156,7 @@ public class Mail {
                     user = conf.getProperty("user") != null ? conf.getProperty("user") : null;
                     pass = conf.getProperty("password") != null ? conf.getProperty("password") : null;
                     System.out.println(MessageFormat.format(R.string("auth_needed"), user));
+                    needsSSL = conf.getProperty("needs_SSL") != null ? conf.getProperty("needs_SSL").equalsIgnoreCase("true") : false;
                 }
                 sender_mail = conf.getProperty("sender_mail") != null ? conf.getProperty("sender_mail") : null;
                 sender_name = conf.getProperty("sender_name") != null ? conf.getProperty("sender_name") : null;
