@@ -161,11 +161,14 @@ public class Mail {
                 }
                 sender_mail = conf.getProperty("sender_mail") != null ? conf.getProperty("sender_mail") : null;
                 sender_name = conf.getProperty("sender_name") != null ? conf.getProperty("sender_name") : null;
-                if (conf.getProperty("logs_directory") != null) {
-                    System.out.println(conf.getProperty("logs_directory"));
-                    l.setLogFile(new File(conf.getProperty("logs_directory").concat(File.separator).concat("mail.log")));
+                String logsDirectory = conf.getProperty("logs_directory");
+                if (logsDirectory != null) {
+                    if (logsDirectory.endsWith(File.separator)) {
+                        logsDirectory = logsDirectory.substring(0, logsDirectory.length() - 1);
+                    }
+                    System.out.println(logsDirectory);
+                    l.setLogFile(new File(logsDirectory.concat(File.separator).concat("mail.log")));
                 }
-
                 System.out.println(MessageFormat.format(R.string("sender_info"), sender_name, sender_mail));
             } catch (IOException e) {
                 Utils.sendError(MessageFormat.format(R.string("io_error_loading_conf"), e.getLocalizedMessage()));
@@ -207,7 +210,7 @@ public class Mail {
                     System.exit(0);
                 }
                 DataSource source = new FileDataSource(attachment.getAbsolutePath());
-                
+
                 messageBodyPart.setDataHandler(new DataHandler(source));
                 messageBodyPart.setFileName(fileName);
                 multipart.addBodyPart(messageBodyPart);
