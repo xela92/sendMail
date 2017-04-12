@@ -62,7 +62,7 @@ public class Mail {
         this.attachment = attach;
         this.subject = subject;
         this.message = message;
-        l = new Log(new File(Log.getLogFilePath()));
+        l = new Log(new File(Log.getDefaultLogFilePath()));
         loadMailServerData();
     }
 
@@ -161,6 +161,11 @@ public class Mail {
                 }
                 sender_mail = conf.getProperty("sender_mail") != null ? conf.getProperty("sender_mail") : null;
                 sender_name = conf.getProperty("sender_name") != null ? conf.getProperty("sender_name") : null;
+                if (conf.getProperty("logs_directory") != null) {
+                    System.out.println(conf.getProperty("logs_directory"));
+                    l.setLogFile(new File(conf.getProperty("logs_directory").concat(File.separator).concat("mail.log")));
+                }
+
                 System.out.println(MessageFormat.format(R.string("sender_info"), sender_name, sender_mail));
             } catch (IOException e) {
                 Utils.sendError(MessageFormat.format(R.string("io_error_loading_conf"), e.getLocalizedMessage()));
@@ -197,7 +202,12 @@ public class Mail {
                 Multipart multipart = new MimeMultipart();
                 MimeBodyPart messageBodyPart = new MimeBodyPart();
                 String fileName = attachment.getName();
+                if (!attachment.exists()) {
+                    Utils.sendError(R.string("error_attachment_not_exists"));
+                    System.exit(0);
+                }
                 DataSource source = new FileDataSource(attachment.getAbsolutePath());
+                
                 messageBodyPart.setDataHandler(new DataHandler(source));
                 messageBodyPart.setFileName(fileName);
                 multipart.addBodyPart(messageBodyPart);

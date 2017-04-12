@@ -13,14 +13,13 @@ import java.util.Locale;
  * @author xela92
  */
 public class SendMail {
-  
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         Localization.setLocale(Locale.getDefault());
         String usage = R.string("usage");
-        Utils.logErrorsToFile();
         if (args.length > 2 && args.length < 5) {
             String to = args[0];
             String subject = args[1];
@@ -35,6 +34,7 @@ public class SendMail {
                 System.exit(0);
             }
             Mail m = new Mail(to, subject, message, attach);
+            Utils.logErrorsToFile();
             m.sendMail();
         } else {
             System.err.println(usage);

@@ -12,7 +12,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import sendmail.Utils;
 
 /**
  *
@@ -20,8 +19,8 @@ import sendmail.Utils;
  */
 public class Log {
 
-    File logFile = null;
-    String toBeLogged;
+    private static File logFile = null;
+    private String toBeLogged;
 
     public Log(String toBeLogged, File logFile) {
         this.logFile = logFile;
@@ -40,11 +39,21 @@ public class Log {
         return dateFormat.format(cal.getTime());
     }
 
-    public static String getLogPath() {
+    public static String getLogDirectoryPath() {
+        return logFile != null ? logFile.getParent() : getDefaultLogPath();
+    }
+    public static File getLogFile() {
+        return logFile;
+    }
+    public static String getLogFilePath() {
+        return logFile != null ? logFile.getAbsolutePath() : getDefaultLogFilePath();
+    }
+
+    public static String getDefaultLogPath() {
         return System.getProperty("user.home").concat(File.separator);
     }
 
-    public static String getLogFilePath() {
+    public static String getDefaultLogFilePath() {
         return System.getProperty("user.home").concat(File.separator).concat("mail.log");
     }
 

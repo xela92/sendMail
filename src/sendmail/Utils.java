@@ -28,7 +28,10 @@ public class Utils {
     public static void logErrorsToFile() {
 
         try {
-            String dir = new File(Log.getLogPath()).getAbsolutePath();
+            String dir = Log.getDefaultLogPath();
+            if (Log.getLogFile() != null) {
+                dir = Log.getLogDirectoryPath();
+            }
             File mailLog = new File(dir + "/mail_errors.log");
             long sizeInBytes = mailLog.length();
             //transform in MB
