@@ -33,5 +33,20 @@ in /usr/local) and create a script like this in $PATH
 #!/bin/bash
 java -jar /usr/local/jbin/sendMail.jar "$@"
 
+[CHANGELOG]
+
+if you want, from the latest version it's possible to specify logs directory in configuration file.
+
+logs_directory=/path/to/logs
+
+On Windows, you need to specify it doubling all the backslashes, like this:
+
+logs_directory=C:\\logs\\directory
+
+I've also added version information, you can find it out using 
+
+java -jar sendMail.jar version
+
+
 
 

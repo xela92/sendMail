@@ -6,6 +6,7 @@
 package sendmail;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Locale;
 
 /**
@@ -20,6 +21,10 @@ public class SendMail {
     public static void main(String[] args) {
         Localization.setLocale(Locale.getDefault());
         String usage = R.string("usage");
+        if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
+            System.out.println(MessageFormat.format(R.string("version"), Utils.buildVersion));
+            System.exit(0);
+        }
         if (args.length > 2 && args.length < 5) {
             String to = args[0];
             String subject = args[1];
