@@ -201,6 +201,7 @@ public class Mail {
             if (attachment != null) {
                 Multipart multipart = new MimeMultipart();
                 MimeBodyPart messageBodyPart = new MimeBodyPart();
+                MimeBodyPart attachBodyPart = new MimeBodyPart();
                 messageBodyPart.setContent(message, "text/html");
 
                 String fileName = attachment.getName();
@@ -210,9 +211,10 @@ public class Mail {
                 }
                 DataSource source = new FileDataSource(attachment.getAbsolutePath());
 
-                messageBodyPart.setDataHandler(new DataHandler(source));
-                messageBodyPart.setFileName(fileName);
+                attachBodyPart.setDataHandler(new DataHandler(source));
+                attachBodyPart.setFileName(fileName);
                 multipart.addBodyPart(messageBodyPart);
+                multipart.addBodyPart(attachBodyPart);
                 msg.setContent(multipart);
             }
             l.setToBeLogged(MessageFormat.format(R.string("log_mail_sent"), to, subject, message));
