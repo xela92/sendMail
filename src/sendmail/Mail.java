@@ -163,7 +163,7 @@ public class Mail {
                     if (logsDirectory.endsWith(File.separator)) {
                         logsDirectory = logsDirectory.substring(0, logsDirectory.length() - 1);
                     }
-                    System.out.println(logsDirectory);
+                    //System.out.println(logsDirectory);
                     l.setLogFile(new File(logsDirectory.concat(File.separator).concat("mail.log")));
                 }
                 System.out.println(MessageFormat.format(R.string("sender_info"), sender_name, sender_mail));
