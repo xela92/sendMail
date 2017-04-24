@@ -14,11 +14,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -204,6 +201,8 @@ public class Mail {
             if (attachment != null) {
                 Multipart multipart = new MimeMultipart();
                 MimeBodyPart messageBodyPart = new MimeBodyPart();
+                messageBodyPart.setContent(message, "text/html");
+
                 String fileName = attachment.getName();
                 if (!attachment.exists()) {
                     Utils.sendError(R.string("error_attachment_not_exists"));
