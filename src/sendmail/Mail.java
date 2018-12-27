@@ -53,6 +53,7 @@ public class Mail {
     private String sender_mail;
     private String sender_name;
     private boolean needsSSL;
+    private boolean needsTLS;
 
     public Mail(String to, String subject, String message, File attach) {
         this.to = to;
@@ -115,6 +116,8 @@ public class Mail {
 //                    mailProps.put("mail.smtp.socketFactory.port", port);
 //                    mailProps.put("mail.smtp.socketFactory.class",
 //                            "javax.net.ssl.SSLSocketFactory");
+                } else if (needsTLS) {
+                   mailProps.put("mail.smtp.starttls.enable", "true");
                 }
                 Authenticator authenticator = new Authenticator() {
                     @Override
@@ -155,6 +158,7 @@ public class Mail {
                     pass = conf.getProperty("password") != null ? conf.getProperty("password") : null;
                     System.out.println(MessageFormat.format(R.string("auth_needed"), user));
                     needsSSL = conf.getProperty("needs_SSL") != null ? conf.getProperty("needs_SSL").equalsIgnoreCase("true") : false;
+                    needsTLS = conf.getProperty("needs_TLS") != null ? conf.getProperty("needs_TLS").equalsIgnoreCase("true") : false;
                 }
                 sender_mail = conf.getProperty("sender_mail") != null ? conf.getProperty("sender_mail") : null;
                 sender_name = conf.getProperty("sender_name") != null ? conf.getProperty("sender_name") : null;

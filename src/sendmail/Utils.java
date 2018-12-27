@@ -21,7 +21,7 @@ import java.io.PrintStream;
  */
 public class Utils {
 
-    public static int buildVersion = 3;
+    public static int buildVersion = 4;
 
     public static PrintStream fileLogWriter;
 
